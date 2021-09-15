@@ -8,7 +8,7 @@ def welcome_assignment_answers(question):
         answer = "No"
         #3
     elif question == "Is it possible to decrypt a message without a key? - Yes/No":
-        answer = "Yes"
+        answer = "No"
         #1
     elif question == "In Slack, what is the secret passphrase posted in the #cyberfellows-computernetworking-fall2021 channel posted by a TA?":
         answer = "mTLS"
