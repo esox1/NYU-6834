@@ -20,14 +20,14 @@ def welcome_assignment_answers(question):
     elif question == "Is MD5 a secured hashing algorithm? - Yes/No":
         answer = "No"
     elif question == "What layer from the TCP/IP model the protocol DHCP belongs to? - The answer should be a numeric number":
-        answer = "7"
+        answer = 7
     elif question == "What layer of the TCP/IP model the protocol TCP belongs to? - The answer should be a numeric number":
-        answer = "4"
+        answer = 4
     return(answer)
 # Complete all the questions.
 
 
 if __name__ == "__main__":
     #use this space to debug and verify that the program works
-    debug_question = "Are encoding and encryption the same? - Yes/No"
+    debug_question = "What layer of the TCP/IP model the protocol TCP belongs to? - The answer should be a numeric number"
     print(welcome_assignment_answers(debug_question))
