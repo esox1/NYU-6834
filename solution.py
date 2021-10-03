@@ -1,6 +1,6 @@
 from socket import *
 
-def smtp_client(port=1025, mailserver='127.0.0.1'):
+def smtp_client(port, mailserver):
    msg = "\r\n My message"
    endmsg = "\r\n.\r\n"
    mailserver = "smtp.gmail.com"
@@ -56,5 +56,5 @@ def smtp_client(port=1025, mailserver='127.0.0.1'):
 #   print(recv5.decode())
    clientSocket.close()
 
-if __name__ == '__main__':
-   smtp_client(1025, '127.0.0.1')
+#if __name__ == '__main__':
+#   smtp_client(1025, '127.0.0.1')
