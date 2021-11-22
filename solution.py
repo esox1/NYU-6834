@@ -5,7 +5,6 @@ import struct
 import time
 import select
 import binascii
-import socket
 
 ICMP_ECHO_REQUEST = 8
 
@@ -104,13 +103,6 @@ def ping(host, timeout=1):
     dest = gethostbyname(host)
     print("Pinging " + dest + " using Python:")
     print("")
-    # Send ping requests to a server separated by approximately one second
-  #  while 1:
-  #      delay = doOnePing(dest, timeout)
-  #      print ("RTT:", delay)
-  #      time.sleep(1)  # one second
-  #  return delay
-
     loop = 0
     # Send ping requests to a server separated by approximately one second
     while loop < 10:
@@ -121,8 +113,7 @@ def ping(host, timeout=1):
     return delay
 
 
-if __name__ == '__main__':
-    ping("google.co.il")
+ping("google.co.il")
 
 
 
