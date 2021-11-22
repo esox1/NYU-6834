@@ -136,8 +136,8 @@ def doOnePing(destAddr, timeout):
 
 def ping(host, timeout=1):
     dest = gethostbyname(host)
-    print 'Pinging ' + dest + ' using Python:'
-    print ''
+    print("Pinging " + dest + " using Python:")
+    print("")
 
     loop = 0
 
@@ -145,7 +145,7 @@ def ping(host, timeout=1):
 
     while loop < 10:
         delay = doOnePing(dest, timeout)
-        print delay
+        print (delay)
         time.sleep(1)  # sleep one second
         loop += 1  # for loop-limit
     return delay
@@ -154,20 +154,16 @@ def ping(host, timeout=1):
 # Picked IP of different continent from:
 # https://www.dotcom-monitor.com/blog/technical-tools/network-location-ip-addresses/
 
-print 'Ping to Washington DC'
+print ("Ping to Washington DC")
 ping('23.81.0.59')  # Washington DC
 
-print '-----------------------'
-print 'Ping to China'
-ping('www.china.org.cn')  # china
+print ("-----------------------")
+print ("Ping to China")
+ping("www.china.org.cn")  # china
 
-print '-----------------------'
-print 'Ping to Australia'
+print ("-----------------------")
+print ("Ping to Australia")
 ping('223.252.19.130')  # Brisbane, Australia
-
-print '-----------------------'
-print 'Ping to Europe'
-ping('95.142.107.181')  # Amsterdam
 
 
 
