@@ -133,11 +133,6 @@ def checksum(string):
    countTo = (len(string) // 2) * 2
    count = 0
 
- #  while count < countTo:
- #      thisVal = (string[count + 1]) * 256 + (string[count])
- #      csum += thisVal
- #      csum &= 0xffffffff
- #      count += 2
    for count in range(0, countTo, 2):
        thisVal = (string[count + 1]) * 256 + (string[count])
        csum = csum + thisVal
@@ -146,11 +141,6 @@ def checksum(string):
    if countTo < len(string):
        csum = csum + string[-1]
        csum = csum & 0xffffffff
-
-
-#   if countTo < len(string):
-#       csum += (string[len(string) - 1])
-#       csum &= 0xffffffff
 
    csum = (csum >> 16) + (csum & 0xffff)
    csum = csum + (csum >> 16)
@@ -245,7 +235,7 @@ def ping(host, timeout=1):
        print(delay)
        time.sleep(1)  # sleep one second
        loop += 1  # for loop-limit
-       return delay
+   return delay
 
 
  #   vars = [str(round(packet_min, 2)), str(round(packet_avg, 2)), str(round(packet_max, 2)),str(round(stdev(stdev_var), 2))]
