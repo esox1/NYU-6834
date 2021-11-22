@@ -58,16 +58,13 @@ def receiveOnePing(mySocket, ID, timeout, destAddr):
        recPacket, addr = mySocket.recvfrom(1024)
 
        icmpHeader = recPacket[20:28]
-       icmpType, code, mychecksum, packetID, sequence = struct.unpack("bbHHh", icmpHeader)
+       Type, code, Checksum, packetID, sequence = struct.unpack("bbHHh", icmpHeader)
 
        #        # verify the ID of packet
-       if icmpType != 8 and packetID == ID:
+       if  packetID == ID:
            bytesInDouble = struct.calcsize("d")
            timeSent = struct.unpack("d", recPacket[28:28 + bytesInDouble])[0]
            return timeReceived - timeSent
-       # Fill in start
-
-       # Fetch the ICMP header from the IP packet
 
        # Fill in end
        timeLeft = timeLeft - howLongInSelect
