@@ -234,7 +234,7 @@ def ping(host, timeout=1):
        delay = doOnePing(dest, timeout)
        print(delay)
        time.sleep(1)  # sleep one second
-       loop += 1  # for loop-limit
+       loop = loop + 1  # for loop-limit
    return delay
 
 
