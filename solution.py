@@ -13,7 +13,7 @@ def checksum(myString):
 # In this function we make the checksum of our packet
     myString = bytearray(myString)
     csum = 0
-    countTo = len(myString) / 2 * 2
+    countTo = (len(myString) / 2) * 2
 
     for count in range(0, countTo, 2):
         thisVal = (myString[count + 1]) * 256 + (myString[count])
@@ -107,8 +107,7 @@ def ping(host, timeout=1):
     # Send ping requests to a server separated by approximately one second
     while 1:
         delay = doOnePing(dest, timeout)
-        print
-        "RTT:", delay
+        print ("RTT:", delay)
         time.sleep(1)  # one second
     return delay
 
