@@ -26,14 +26,6 @@ def checksum(string):
        csum = csum & 0xffffffff
 
 
- #  for count in range(0, countTo, 2):
- #      thisVal = (string[count + 1]) * 256 + (string[count])
- #      csum = csum + thisVal
- #      csum = csum & 0xffffffff
-
- #  if countTo < len(string):
- #      csum = csum + string[-1]
- #      csum = csum & 0xffffffff
 
    csum = (csum >> 16) + (csum & 0xffff)
    csum = csum + (csum >> 16)
@@ -129,6 +121,15 @@ def ping(host, timeout=1):
  #   vars = [str(round(packet_min, 2)), str(round(packet_avg, 2)), str(round(packet_max, 2)),str(round(stdev(stdev_var), 2))]
 
  #  return vars
+
+#  for count in range(0, countTo, 2):
+#      thisVal = (string[count + 1]) * 256 + (string[count])
+#      csum = csum + thisVal
+#      csum = csum & 0xffffffff
+
+#  if countTo < len(string):
+#      csum = csum + string[-1]
+#      csum = csum & 0xffffffff
 
 if __name__ == '__main__':
    ping("google.co.il")
