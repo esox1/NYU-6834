@@ -26,20 +26,15 @@ def checksum(myString):
         csum = csum + myString[-1]
         csum = csum & 0xffffffff
 
-    csum = (csum >> 16) + (csum & 65535)
+    csum = (csum >> 16) + (csum & 0xffff)
     csum = csum + (csum >> 16)
     answer = ~csum
-    answer = answer & 65535
-    answer = answer >> 8 | answer << 8 & 0xff00
+    answer = answer & 0xffff
+    answer = answer >> 8 | (answer << 8 & 0xff00)
     return answer
 
 
-def receiveOnePing(
-    mySocket,
-    ID,
-    timeout,
-    destAddr,
-    ):
+def receiveOnePing( mySocket, ID, timeout, destAddr):
     timeLeft = timeout
     while 1:
         startedSelect = time.time()
@@ -49,26 +44,23 @@ def receiveOnePing(
             return 'Request timed out.'
 
         timeReceived = time.time()
-        (recPacket, addr) = mySocket.recvfrom(1024)
+        recPacket, addr = mySocket.recvfrom(1024)
 
 # accessing icmp header from packet
 
         icmpHeader = recPacket[20:28]
-        (icmpType, code, mychecksum, packetID, sequence) = \
-            struct.unpack('bbHHh', icmpHeader)
+        icmpType, code, mychecksum, packetID, sequence = struct.unpack("bbHHh", icmpHeader)
 
-# verify the ID of packet
-
+        # verify the ID of packet
         if icmpType != 8 and packetID == ID:
-            bytesInDouble = struct.calcsize('d')
-            timeSent = struct.unpack('d', recPacket[28:28
-                    + bytesInDouble])[0]
+            bytesInDouble = struct.calcsize("d")
+            timeSent = struct.unpack("d", recPacket[28:28 + bytesInDouble])[0]
             return timeReceived - timeSent
 
         timeLeft = timeLeft - howLongInSelect
 
         if timeLeft <= 0:
-            return 'Request timed out.'
+            return "Request timed out."
 
 
 def sendOnePing(mySocket, destAddr, ID):
@@ -80,15 +72,8 @@ def sendOnePing(mySocket, destAddr, ID):
 # Make a dummy header with a 0 checksum.
 # struct -- Interpret strings as packed binary data
 
-    header = struct.pack(
-        'bbHHh',
-        ICMP_ECHO_REQUEST,
-        0,
-        myChecksum,
-        ID,
-        1,
-        )
-    data = struct.pack('d', time.time())
+    header = struct.pack( "bbHHh", ICMP_ECHO_REQUEST, 0, myChecksum, ID, 1)
+    data = struct.pack("d", time.time())
 
 # Calculate the checksum on the data and the dummy header.
 
@@ -97,21 +82,13 @@ def sendOnePing(mySocket, destAddr, ID):
 # Get the right checksum, and put in the header
 
     if sys.platform == 'darwin':
-        myChecksum = htons(myChecksum) & 65535
+        myChecksum = htons(myChecksum) & 0xffff
     else:
 
 # Convert 16-bit integers from host to network byte order.
-
         myChecksum = htons(myChecksum)
 
-    header = struct.pack(
-        'bbHHh',
-        ICMP_ECHO_REQUEST,
-        0,
-        myChecksum,
-        ID,
-        1,
-        )
+    header = struct.pack( "bbHHh", ICMP_ECHO_REQUEST, 0, myChecksum, ID, 1)
     packet = header + data
     mySocket.sendto(packet, (destAddr, 1))  # AF_INET address must be tuple, not str
 
@@ -120,16 +97,13 @@ def sendOnePing(mySocket, destAddr, ID):
 # which can be referenced by their position number within the object
 
 def doOnePing(destAddr, timeout):
-    icmp = getprotobyname('icmp')
-
-# Create Socket here
-
+    icmp = getprotobyname("icmp")
+    # Create Socket here
     mySocket = socket(AF_INET, SOCK_RAW, icmp)
 
-    myID = os.getpid() & 65535  # Return the current process i
+    myID = os.getpid() & 0xFFFF # Return the current process i
     sendOnePing(mySocket, destAddr, myID)
     delay = receiveOnePing(mySocket, myID, timeout, destAddr)
-
     mySocket.close()
     return delay
 
@@ -138,11 +112,8 @@ def ping(host, timeout=1):
     dest = gethostbyname(host)
     print("Pinging " + dest + " using Python:")
     print("")
-
     loop = 0
-
-# Send ping requests to a server separated by approximately one second
-
+    # Send ping requests to a server separated by approximately one second
     while loop < 10:
         delay = doOnePing(dest, timeout)
         print (delay)
@@ -150,20 +121,6 @@ def ping(host, timeout=1):
         loop += 1  # for loop-limit
     return delay
 
-
-# Picked IP of different continent from:
-# https://www.dotcom-monitor.com/blog/technical-tools/network-location-ip-addresses/
-
-print ("Ping to Washington DC")
-ping('23.81.0.59')  # Washington DC
-
-print ("-----------------------")
-print ("Ping to China")
-ping("www.china.org.cn")  # china
-
-print ("-----------------------")
-print ("Ping to Australia")
-ping('223.252.19.130')  # Brisbane, Australia
 
 
 
