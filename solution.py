@@ -116,7 +116,7 @@
 #ping("google.co.il")
 #
 
-#from socket import *
+from socket import *
 import os
 import sys
 import struct
@@ -165,6 +165,14 @@ def receiveOnePing(mySocket, ID, timeout, destAddr):
        timeReceived = time.time()
        recPacket, addr = mySocket.recvfrom(1024)
 
+       icmpHeader = recPacket[20:28]
+       icmpType, code, mychecksum, packetID, sequence = struct.unpack("bbHHh", icmpHeader)
+
+       #        # verify the ID of packet
+       if icmpType != 8 and packetID == ID:
+           bytesInDouble = struct.calcsize("d")
+           timeSent = struct.unpack("d", recPacket[28:28 + bytesInDouble])[0]
+           return timeReceived - timeSent
        # Fill in start
 
        # Fetch the ICMP header from the IP packet
@@ -197,7 +205,6 @@ def sendOnePing(mySocket, destAddr, ID):
 
    header = struct.pack("bbHHh", ICMP_ECHO_REQUEST, 0, myChecksum, ID, 1)
    packet = header + data
-
    mySocket.sendto(packet, (destAddr, 1))  # AF_INET address must be tuple, not str
 
 
@@ -206,8 +213,6 @@ def sendOnePing(mySocket, destAddr, ID):
 
 def doOnePing(destAddr, timeout):
    icmp = getprotobyname("icmp")
-
-
    # SOCK_RAW is a powerful socket type. For more details:   http://sockraw.org/papers/sock_raw
    mySocket = socket(AF_INET, SOCK_RAW, icmp)
 
