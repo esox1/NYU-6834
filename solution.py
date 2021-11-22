@@ -231,11 +231,15 @@ def ping(host, timeout=1):
    # Calculate vars values and return them
    loop = 0
    # Send ping requests to a server separated by approximately one second
-   while loop < 10:
+   for i in range(0,4):
        delay = doOnePing(dest, timeout)
        print(delay)
-       time.sleep(1)  # sleep one second
-       loop = loop + 1  # for loop-limit
+       time.sleep(1)  # one second
+ #  while loop < 10:
+ #      delay = doOnePing(dest, timeout)
+ #      print(delay)
+ #      time.sleep(1)  # sleep one second
+ #      loop = loop + 1  # for loop-limit
    return delay
 
 
