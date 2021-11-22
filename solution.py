@@ -58,7 +58,7 @@ def receiveOnePing(mySocket, ID, timeout, destAddr):
        recPacket, addr = mySocket.recvfrom(1024)
 
        icmpHeader = recPacket[20:28]
-       Type, code, Checksum, packetID, sequence = struct.unpack("bbHHh", icmpHeader)
+       Type, code, checksum, packetID, sequence = struct.unpack("bbHHh", icmpHeader)
 
        #        # verify the ID of packet
        if  packetID == ID:
@@ -118,26 +118,15 @@ def ping(host, timeout=1):
    print("Pinging " + dest + " using Python:")
    print("")
    # Calculate vars values and return them
-   loop = 0
    # Send ping requests to a server separated by approximately one second
    for i in range(0,4):
        delay = doOnePing(dest, timeout)
        print(delay)
        time.sleep(1)  # one second
- #  while loop < 10:
- #      delay = doOnePing(dest, timeout)
- #      print(delay)
- #      time.sleep(1)  # sleep one second
- #      loop = loop + 1  # for loop-limit
    return delay
 
 
  #   vars = [str(round(packet_min, 2)), str(round(packet_avg, 2)), str(round(packet_max, 2)),str(round(stdev(stdev_var), 2))]
- #  # Send ping requests to a server separated by approximately one second
- #  for i in range(0,4):
- #      delay = doOnePing(dest, timeout)
- #      print(delay)
- #      time.sleep(1)  # one second
 
  #  return vars
 
