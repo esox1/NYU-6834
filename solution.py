@@ -144,8 +144,13 @@ def checksum(string):
        csum = csum & 0xffffffff
 
    if countTo < len(string):
-       csum += (string[len(string) - 1])
-       csum &= 0xffffffff
+       csum = csum + string[-1]
+       csum = csum & 0xffffffff
+
+
+#   if countTo < len(string):
+#       csum += (string[len(string) - 1])
+#       csum &= 0xffffffff
 
    csum = (csum >> 16) + (csum & 0xffff)
    csum = csum + (csum >> 16)
