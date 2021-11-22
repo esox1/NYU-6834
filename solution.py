@@ -20,7 +20,7 @@ def checksum(myString):
         csum = csum & 0xffffffff
 
     if countTo < len(myString):
-        csum = csum + (myString[len(myString)-1])
+        csum = csum + myString[-1]
         csum = csum & 0xffffffff
 
     csum = (csum >> 16) + (csum & 0xffff)
