@@ -5,6 +5,7 @@ import struct
 import time
 import select
 import binascii
+import socket
 
 ICMP_ECHO_REQUEST = 8
 
@@ -12,7 +13,7 @@ def checksum(myString):
 # In this function we make the checksum of our packet
     myString = bytearray(myString)
     csum = 0
-    countTo = len(myString) // 2 * 2
+    countTo = len(myString) / 2 * 2
 
     for count in range(0, countTo, 2):
         thisVal = (myString[count + 1]) * 256 + (myString[count])
