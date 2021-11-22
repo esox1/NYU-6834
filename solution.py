@@ -105,21 +105,20 @@ def ping(host, timeout=1):
     print("Pinging " + dest + " using Python:")
     print("")
     # Send ping requests to a server separated by approximately one second
-    while 1:
-        delay = doOnePing(dest, timeout)
-        print ("RTT:", delay)
-        time.sleep(1)  # one second
-    return delay
-
-
-  #  loop = 0
-  #  # Send ping requests to a server separated by approximately one second
-  #  while loop < 10:
+  #  while 1:
   #      delay = doOnePing(dest, timeout)
-  #      print (delay)
-  #      time.sleep(1)  # sleep one second
-  #      loop += 1  # for loop-limit
+  #      print ("RTT:", delay)
+  #      time.sleep(1)  # one second
   #  return delay
+
+    loop = 0
+    # Send ping requests to a server separated by approximately one second
+    while loop < 10:
+        delay = doOnePing(dest, timeout)
+        print(delay)
+        time.sleep(1)  # sleep one second
+        loop += 1  # for loop-limit
+    return delay
 
 
 if __name__ == '__main__':
