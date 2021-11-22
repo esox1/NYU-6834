@@ -130,6 +130,7 @@ ICMP_ECHO_REQUEST = 8
 
 def checksum(string):
    csum = 0
+   string = bytearray(string)
    countTo = (len(string) // 2) * 2
    count = 0
 
