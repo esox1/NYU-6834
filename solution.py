@@ -14,7 +14,7 @@ packageRev = 0;
 
 def checksum(string):
    csum = 0
-   countTo = (len(string) // 2) * 2
+   countTo = (len(string) / 2) * 2
    count = 0
 
    while count < countTo:
@@ -98,6 +98,7 @@ def sendOnePing(mySocket, destAddr, ID):
 def doOnePing(destAddr, timeout):
    icmp = getprotobyname("icmp")
    # SOCK_RAW is a powerful socket type. For more details:   http://sockraw.org/papers/sock_raw
+
    mySocket = socket(AF_INET, SOCK_RAW, icmp)
 
    myID = os.getpid() & 0xFFFF  # Return the current process i
@@ -120,7 +121,7 @@ def ping(host, timeout=1):
        print( "maxRTT:", (max(timeRTT) if len(timeRTT) > 0 else 0), "\tminRTT:", (
            min(timeRTT) if len(timeRTT) > 0 else 0), "\naverageRTT:", float(
            sum(timeRTT) / len(timeRTT) if len(timeRTT) > 0 else float("nan")))
-       print( "Package Lose Rate:", ((packageSent - packageRev) / packageSent) if packageRev > 0 else 0)
+#       print( "Package Lose Rate:", ((packageSent - packageRev) / packageSent) if packageRev > 0 else 0)
        time.sleep(1)  # one second
    return delay
 
@@ -138,5 +139,5 @@ def ping(host, timeout=1):
 #      csum = csum + string[-1]
 #      csum = csum & 0xffffffff
 
-if __name__ == '__main__':
-   ping("google.co.il")
+#if __name__ == '__main__':
+ping("google.co.il")
