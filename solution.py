@@ -9,6 +9,8 @@ import binascii
 
 ICMP_ECHO_REQUEST = 8
 timeRTT = []
+packageSent =0;
+packageRev = 0;
 
 def checksum(string):
    csum = 0
@@ -38,7 +40,7 @@ def checksum(string):
 
 def receiveOnePing(mySocket, ID, timeout, destAddr):
    timeLeft = timeout
-
+   global packageRev, timeRTT
    while 1:
        startedSelect = time.time()
        whatReady = select.select([mySocket], [], [], timeLeft)
@@ -50,13 +52,14 @@ def receiveOnePing(mySocket, ID, timeout, destAddr):
        recPacket, addr = mySocket.recvfrom(1024)
 
        icmpHeader = recPacket[20:28]
-       Type, code, checksum, packetID, sequence = struct.unpack("bbHHh", icmpHeader)
-
-       #        # verify the ID of packet
-       if  packetID == ID:
+       requestType, code, revChecksum, revID, revSequence = struct.unpack("bbHHh", icmpHeader)
+               # verify the ID of packet
+       if revID == ID:
            bytesInDouble = struct.calcsize("d")
-           timeSent = struct.unpack("d", recPacket[28:28 + bytesInDouble])[0]
-           return timeReceived - timeSent
+           timeData = struct.unpack("d", recPacket[28:28 + bytesInDouble])[0]
+           timeRTT.append(timeReceived - timeData)
+           packageRev += 1
+           return timeReceived - timeData
 
        # Fill in end
        timeLeft = timeLeft - howLongInSelect
@@ -66,7 +69,7 @@ def receiveOnePing(mySocket, ID, timeout, destAddr):
 
 def sendOnePing(mySocket, destAddr, ID):
    # Header is type (8), code (8), checksum (16), id (16), sequence (16)
-
+   global packageSent
    myChecksum = 0
    # Make a dummy header with a 0 checksum
    # struct -- Interpret strings as packed binary data
@@ -113,7 +116,11 @@ def ping(host, timeout=1):
    # Send ping requests to a server separated by approximately one second
    for i in range(0,4):
        delay = doOnePing(dest, timeout)
-       print(delay)
+       print("RTT:", delay)
+       print( "maxRTT:", (max(timeRTT) if len(timeRTT) > 0 else 0), "\tminRTT:", (
+           min(timeRTT) if len(timeRTT) > 0 else 0), "\naverageRTT:", float(
+           sum(timeRTT) / len(timeRTT) if len(timeRTT) > 0 else float("nan")))
+       print( "Package Lose Rate:", ((packageSent - packageRev) / packageSent) if packageRev > 0 else 0)
        time.sleep(1)  # one second
    return delay
 
