@@ -184,7 +184,7 @@ def receiveOnePing(mySocket, ID, timeout, destAddr):
         recPacket, addr = mySocket.recvfrom(1024)
 
         icmpHeader = recPacket[20:28]
-        icmpType, code, mychecksum, packetID, sequence = struct.unpack("bbHHh", icmpHeader)
+        icmpType, code, checksum, packetID, sequence = struct.unpack("bbHHh", icmpHeader)
 
         if type != 8 and packetID == ID:
             bytesInDouble = struct.calcsize("d")
@@ -247,7 +247,7 @@ def ping(host, timeout=1):
     return delay
 
 
-ping("127.0.0.1")
+ping("google.co.il")
 
 ###################################################
 #from socket import *
