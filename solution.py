@@ -124,8 +124,6 @@
 #
 #
 #######################################
-
-
 from socket import *
 import os
 import sys
@@ -138,19 +136,32 @@ ICMP_ECHO_REQUEST = 8
 
 
 def checksum(str_):
-    # In this function we make the checksum of our packet
-    str_ = bytearray(str_)
     csum = 0
     countTo = (len(str_) // 2) * 2
+    count = 0
 
-    for count in range(0, countTo, 2):
-        thisVal = str_[count + 1] * 256 + str_[count]
+    while count < countTo:
+        thisVal = (str_[count + 1]) * 256 + (str_[count])
         csum = csum + thisVal
         csum = csum & 0xffffffff
+        count = count + 2
 
     if countTo < len(str_):
-        csum = csum + str_[-1]
+        csum = csum + (str_[len(str_) - 1])
         csum = csum & 0xffffffff
+   # # In this function we make the checksum of our packet
+   # str_ = bytearray(str_)
+   # csum = 0
+   # countTo = (len(str_) // 2) * 2
+
+   # for count in range(0, countTo, 2):
+   #     thisVal = str_[count + 1] * 256 + str_[count]
+   #     csum = csum + thisVal
+   #     csum = csum & 0xffffffff
+
+   # if countTo < len(str_):
+   #     csum = csum + str_[-1]
+   #     csum = csum & 0xffffffff
 
     csum = (csum >> 16) + (csum & 0xffff)
     csum = csum + (csum >> 16)
