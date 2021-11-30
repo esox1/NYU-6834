@@ -7,7 +7,13 @@ import select
 import binascii
 
 ICMP_ECHO_REQUEST = 8
-
+packetssent=0
+packetsreceived=0
+#packetslost=(packetssent-packetsreceived)/packetssent
+rttmin=999
+rttmax=0
+pinged=0
+totalrtt=0
 
 def checksum(str_):
     # In this function we make the checksum of our packet
@@ -39,23 +45,27 @@ def receiveOnePing(mySocket, ID, timeout, destAddr):
         whatReady = select.select([mySocket], [], [], timeLeft)
         howLongInSelect = (time.time() - startedSelect)
         if whatReady[0] == []:  # Timeout
+            bytesInDouble = struct.calcsize("d")
+            print("Reply from " + str(destAddr) + ":" + " bytes=" + str(bytesInDouble) + " ")
             return "Request timed out."
 
         timeReceived = time.time()
         recPacket, addr = mySocket.recvfrom(1024)
-
+        global packetsreceived
+        packetsreceived = packetsreceived + 1
         icmpHeader = recPacket[20:28]
+
+        ttl = struct.unpack("d", recPacket[0:8])[0]
+
         icmpType, code, Checksum, packetID, sequence = struct.unpack("bbHHh", icmpHeader)
 
-        if type != 8 and packetID == ID:
+        if (packetID == ID) :
             bytesInDouble = struct.calcsize("d")
             timeSent = struct.unpack("d", recPacket[28:28 + bytesInDouble])[0]
+            print("Reply from " + str(destAddr) + ":" + " bytes=" + str(bytesInDouble) + " ")
             return timeReceived - timeSent
-        else:
-            return 'Different ID'
 
         timeLeft = timeLeft - howLongInSelect
-
         if timeLeft <= 0:
             return "Request timed out."
 
@@ -85,26 +95,43 @@ def doOnePing(destAddr, timeout):
     icmp = getprotobyname("icmp")
     # Create Socket here
     mySocket = socket(AF_INET, SOCK_DGRAM, icmp)
-
     myID = os.getpid() & 0xFFFF  # Return the current process i
     sendOnePing(mySocket, destAddr, myID)
+    global packetssent
+    packetssent = packetssent + 1
     delay = receiveOnePing(mySocket, myID, timeout, destAddr)
 
     mySocket.close()
     return delay
 
 def ping(host, timeout=1):
-    #timeout=1 means: If one second goes by without a reply from the server,
-    #the client assumes that either the client's ping or the server's pong is lost
     dest = gethostbyname(host)
-    print ("Pinging " + dest + " using Python:")
-    print ("")
+    global pinged
+    if (pinged == 0):
+        print("Pinging " + dest + " using Python:")
+        print("")
+        pinged = 1
     #Send ping requests to a server separated by approximately one second
-    while 1 :
+    while 1:
         delay = doOnePing(dest, timeout)
-        print(delay)
-        time.sleep(1)# one second
-    return delay
+        if (delay == "Request timed out."):
+            print(delay)
+            print(" ")
+        else:
+            delay = delay * 1000
+            print("rtt = " + str(delay) + " ms")
+            print(" ")
+        time.sleep(1)  # one second
+        global totalrtt
+        global rttmin
+        global rttmax
+        if (delay != "Request timed out."):
+            if (delay < rttmin):
+                rttmin = delay
+            if (delay > rttmin):
+                rttmax = delay
+            totalrtt = totalrtt + delay
+        return delay
 
 #def ping(host, timeout=1):
 #    dest = gethostbyname(host)
@@ -117,8 +144,25 @@ def ping(host, timeout=1):
 #        time.sleep(1)  # one second
 #    return delay
 
+hosttoping = "google.co.il"
+print("Pinging: " + hosttoping + " with 8 bytes of data")
+for i in range(0, 10):
+    ping(hosttoping)
 
-ping("google.co.il")
+print("Ping Statistics for " + gethostbyname("www.poly.edu"))
+print("")
+print("Packets: Sent = " + str(packetssent))
+print("Packets: Received = " + str(packetsreceived))
+print("Packets: lost =" + str(packetssent - packetsreceived))
+if ((packetssent - packetsreceived) >= 0):
+    print("Packets: lost% = " + str(((packetssent - packetsreceived) / packetssent) * 100))
+else:
+    print("Packets: lost% = " + str(0))
+
+print("Minimum RTT: " + str(rttmin) + " ms")
+print("Maximum RTT: " + str(rttmax) + " ms")
+print("Average RTT: " + str(totalrtt / packetsreceived) + " ms")
+#ping("google.co.il")
 #################################################
 
 
