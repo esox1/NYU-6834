@@ -549,9 +549,7 @@ def build_packet(time_str):
 
     # Now that we have the right checksum, we put that in. It's just easier
     # to make up a new header than to stuff it into the dummy.
-    header = struct.pack(
-        "!BBHHH", ICMP_ECHO_REQUEST, 0, myChecksum, ID, 1
-    )
+    header = struct.pack( "!BBHHH", ICMP_ECHO_REQUEST, 0, myChecksum, ID, 1 )
     packet = header + data
     return packet
 
@@ -561,8 +559,6 @@ def get_route(hostname):
     timeLeft = TIMEOUT
     for ttl in range(1,MAX_HOPS):
         for tries in range(TRIES):
-
-
             icmp = getprotobyname('icmp')
             # Make a raw socket named mySocket
             mySocket = socket(AF_INET, SOCK_RAW, icmp)
