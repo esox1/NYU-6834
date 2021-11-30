@@ -236,16 +236,11 @@ def receiveOnePing(mySocket, ID, timeout, destAddr):
 
 
 def sendOnePing(mySocket, destAddr, ID):
-   # Header is type (8), code (8), checksum (16), id (16), sequence (16)
-
    myChecksum = 0
-   # Make a dummy header with a 0 checksum
-   # struct -- Interpret strings as packed binary data
    header = struct.pack("bbHHh", ICMP_ECHO_REQUEST, 0, myChecksum, ID, 1)
    data = struct.pack("d", time.time())
    # Calculate the checksum on the data and the dummy header.
    myChecksum = checksum(header + data)
-
    # Get the right checksum, and put in the header
 
    if sys.platform == 'darwin':
@@ -253,7 +248,6 @@ def sendOnePing(mySocket, destAddr, ID):
        myChecksum = htons(myChecksum) & 0xffff
    else:
        myChecksum = htons(myChecksum)
-
 
    header = struct.pack("bbHHh", ICMP_ECHO_REQUEST, 0, myChecksum, ID, 1)
    packet = header + data
@@ -266,11 +260,7 @@ def sendOnePing(mySocket, destAddr, ID):
 
 def doOnePing(destAddr, timeout):
    icmp = getprotobyname("icmp")
-
-
-   # SOCK_RAW is a powerful socket type. For more details:   http://sockraw.org/papers/sock_raw
    mySocket = socket(AF_INET, SOCK_RAW, icmp)
-
    myID = os.getpid() & 0xFFFF  # Return the current process i
    sendOnePing(mySocket, destAddr, myID)
    delay = receiveOnePing(mySocket, myID, timeout, destAddr)
@@ -288,13 +278,48 @@ def ping(host, timeout=1):
    # Send ping requests to a server separated by approximately one second
    for i in range(0,4):
        delay = doOnePing(dest, timeout)
-       print(delay)
+       if (delay == "Request timed out."):
+           print(delay)
+           print(" ")
+       else:
+           delay = delay * 1000
+           print("rtt = " + str(delay) + " ms")
+           print(" ")
        time.sleep(1)  # one second
 
-   return vars
+       global totalrtt
+       global rttmin
+       global rttmax
+
+       if (delay != "Request timed out."):
+           if (delay < rttmin):
+               rttmin = delay
+           if (delay > rttmin):
+               rttmax = delay
+           totalrtt = totalrtt + delay
+
+   return delay
+  # return vars
 
 if __name__ == '__main__':
-   ping("google.co.il")
+    print("Pinging: " + "google.co.il" + " with 8 bytes of data")
+    for i in range(0, 10):
+        ping("google.co.il")
+        #ping(hosttoping)
+
+    print("Ping Statistics for " + gethostbyname("google.co.il"))
+    print("")
+    print("Packets: Sent = " + str(packetssent))
+    print("Packets: Received = " + str(packetsreceived))
+    print("Packets: lost =" + str(packetssent - packetsreceived))
+    if ((packetssent - packetsreceived) >= 0):
+        print("Packets: lost% = " + str(((packetssent - packetsreceived) / packetssent) * 100))
+    else:
+        print("Packets: lost% = " + str(0))
+
+    print("Minimum RTT: " + str(rttmin) + " ms")
+    print("Maximum RTT: " + str(rttmax) + " ms")
+    print("Average RTT: " + str(totalrtt / packetsreceived) + " ms")
 
 
 
