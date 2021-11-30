@@ -463,17 +463,19 @@ def ping(host, timeout=1):
 
     # Send ping requests to a server separated by approximately one second
 
-    while 1:
+    for i in range(0, 4):
         delay = doOnePing(dest, timeout)
+        print(delay)
+        time.sleep(1)  # one second
         print ('RTT:', delay)
         print ('maxRTT:', (max(timeRTT) if len(timeRTT) > 0 else 0), \
             '\tminRTT:', (min(timeRTT) if len(timeRTT) > 0 else 0), \
-            '\naverageRTT:', float((sum(timeRTT) / len(timeRTT) if len(timeRTT) > 0 else float('nan'))))
+            '\taverageRTT:', float((sum(timeRTT) / len(timeRTT) if len(timeRTT) > 0 else float('nan'))))
         print ('Package Lose Rate:', ((packageSent - packageRev) / packageSent if packageRev > 0 else 0))
         time.sleep(1)  # one second
     return delay
 
-
+#for i in range(0, 10):
 ping("google.co.il")
 
 
